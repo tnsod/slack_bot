@@ -1,0 +1,1 @@
+https://www.acmicpc.net/login?next=%2F
