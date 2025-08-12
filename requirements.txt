@@ -2,3 +2,6 @@ dotenv
 slack_sdk
 slack_bolt
 selenium
+pyperclip
+sqlite3
+requests
