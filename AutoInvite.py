@@ -2,6 +2,8 @@ from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 import pyperclip
 import time
 import os
@@ -13,8 +15,37 @@ BOJ_PASSWORD = os.getenv('BOJ_PASSWORD')
 return_cnt = 0
 def invite(boj_id):
     global return_cnt
+    
+    driver = None
+    
     try:
-        driver = webdriver.Chrome()
+        # Chrome 옵션 설정
+        chrome_options = Options()
+        
+        # 필수 옵션들 (EC2에서 반드시 필요)
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-plugins")
+        chrome_options.add_argument("--window-size=1920,1080")
+        
+        # DevToolsActivePort 오류 해결을 위한 추가 옵션들
+        chrome_options.add_argument("--remote-debugging-port=0")
+        chrome_options.add_argument("--disable-background-timer-throttling")
+        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+        chrome_options.add_argument("--disable-renderer-backgrounding")
+        chrome_options.add_argument("--disable-features=TranslateUI")
+        chrome_options.add_argument("--disable-ipc-flooding-protection")
+        
+        # ChromeDriver 서비스 설정
+        service = Service('/usr/bin/chromedriver')
+        
+        # 드라이버 생성
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        
+        # 크롤링
         driver.get('https://www.acmicpc.net/login?next=%2F')
         time.sleep(3)
 
