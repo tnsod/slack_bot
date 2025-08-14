@@ -13,6 +13,14 @@ load_dotenv()
 BOJ_ID = os.getenv('BOJ_ID')
 BOJ_PASSWORD = os.getenv('BOJ_PASSWORD')
 
+print(f"BOJ_ID: {BOJ_ID}")
+print(f"BOJ_PASSWORD: {'*' * len(BOJ_PASSWORD) if BOJ_PASSWORD else 'None'}")
+
+if not BOJ_ID or not BOJ_PASSWORD:
+    print("❌ 환경변수가 제대로 로드되지 않았습니다!")
+else:
+    print("✅ 환경변수 로드 성공!")
+
 return_cnt = 0
 
 def invite(boj_id):
@@ -70,7 +78,7 @@ def invite(boj_id):
         
         print("로그인 정보 입력 중...")
         # ID 입력
-        id_box = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="login_form"]/div[2]/input')))
+        id_box = driver.find_element(By.XPATH, '//*[@id="login_form"]/div[2]/input')
         id_box.clear()
         id_box.send_keys(BOJ_ID)
         time.sleep(1)
@@ -81,7 +89,7 @@ def invite(boj_id):
         password_box.send_keys(BOJ_PASSWORD)
         time.sleep(1)
         
-        login_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="submit_button"]')))
+        login_button = driver.find_element(By.XPATH, '//*[@id="submit_button"]')
         login_button.click()
         
         print("로그인 처리 대기 중...")
