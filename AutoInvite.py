@@ -79,35 +79,32 @@ def invite(boj_id):
         print("로그인 정보 입력 중...")
         # ID 입력
         id_box = driver.find_element(By.XPATH, '//*[@id="login_form"]/div[2]/input')
+        if id_box:
+            print("찾음")
         id_box.clear()
         id_box.send_keys(BOJ_ID)
         time.sleep(1)
         
         # 비밀번호 입력
         password_box = driver.find_element(By.XPATH, '//*[@id="login_form"]/div[3]/input')
+        if password_box:
+            print("찾음")
         password_box.clear()
         password_box.send_keys(BOJ_PASSWORD)
         time.sleep(1)
         
         login_button = driver.find_element(By.XPATH, '//*[@id="submit_button"]')
+        if login_button:
+            print("찾음")
         login_button.click()
         
         print("로그인 처리 대기 중...")
         time.sleep(5)
         
-        # 로그인 성공 여부 확인
-        current_url = driver.current_url
-        print(f"현재 URL: {current_url}")
-        
-        if "login" in current_url:
-            print("❌ 로그인 실패!")
-            return "로그인 실패"
-        
-        print("✅ 로그인 성공!")
-        
         # 그룹 관리 페이지로 이동
         print("그룹 관리 페이지로 이동 중...")
         driver.get('https://www.acmicpc.net/group/admin/member/24084')
+        print(driver.current_url)
         time.sleep(5)
         
         print(f"사용자 {boj_id} 초대 중...")
