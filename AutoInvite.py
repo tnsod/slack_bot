@@ -24,7 +24,7 @@ def invite(boj_id):
         
         chrome_options = Options()
         
-        # 필수 headless 옵션
+        # headless
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
@@ -45,7 +45,6 @@ def invite(boj_id):
         chrome_options.add_argument("--disable-features=TranslateUI")
         chrome_options.add_argument("--disable-ipc-flooding-protection")
         
-        # 추가 안정성 옵션
         chrome_options.add_argument("--disable-blink-features=AutomationControlled")
         chrome_options.add_argument("--disable-infobars")
         chrome_options.add_argument("--disable-notifications")
@@ -67,7 +66,6 @@ def invite(boj_id):
         driver.get('https://www.acmicpc.net/login?next=%2F')
         time.sleep(3)
         
-        # 명시적 대기를 사용한 안전한 요소 찾기
         wait = WebDriverWait(driver, 15)
         
         print("로그인 정보 입력 중...")
@@ -83,12 +81,11 @@ def invite(boj_id):
         password_box.send_keys(BOJ_PASSWORD)
         time.sleep(1)
         
-        # 로그인 버튼 클릭
         login_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="submit_button"]')))
         login_button.click()
         
         print("로그인 처리 대기 중...")
-        time.sleep(5)  # 로그인 처리 시간 확보
+        time.sleep(5)
         
         # 그룹 관리 페이지로 이동
         print("그룹 관리 페이지로 이동 중...")
@@ -98,6 +95,8 @@ def invite(boj_id):
         # 초대 입력란 대기 및 입력
         print(f"사용자 {boj_id} 초대 중...")
         invite_box = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="add-member-form"]/div/div/input')))
+        if invite_box:
+            print("입력칸 찾음")
         invite_box.clear()
         invite_box.send_keys(boj_id)
         invite_box.send_keys(Keys.RETURN)
