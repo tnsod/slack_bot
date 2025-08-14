@@ -1,10 +1,10 @@
 from dotenv import load_dotenv
 from selenium import webdriver
-from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-import pyperclip
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time
 import os
 
@@ -13,73 +13,78 @@ BOJ_ID = os.getenv('BOJ_ID')
 BOJ_PASSWORD = os.getenv('BOJ_PASSWORD')
 
 return_cnt = 0
+
 def invite(boj_id):
     global return_cnt
-    
     driver = None
     
     try:
+        print(f"BOJ ID {boj_id} 초대 프로세스 시작...")
+        
         # Chrome 옵션 설정
         chrome_options = Options()
-        
-        # 필수 옵션들 (EC2에서 반드시 필요)
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-plugins")
         chrome_options.add_argument("--window-size=1920,1080")
-        
-        # DevToolsActivePort 오류 해결을 위한 추가 옵션들
         chrome_options.add_argument("--remote-debugging-port=0")
-        chrome_options.add_argument("--disable-background-timer-throttling")
-        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
-        chrome_options.add_argument("--disable-renderer-backgrounding")
-        chrome_options.add_argument("--disable-features=TranslateUI")
-        chrome_options.add_argument("--disable-ipc-flooding-protection")
         
         # ChromeDriver 서비스 설정
         service = Service('/usr/bin/chromedriver')
-        
-        # 드라이버 생성
         driver = webdriver.Chrome(service=service, options=chrome_options)
         
-        # 크롤링
+        print("BOJ 로그인 페이지 접속 중...")
         driver.get('https://www.acmicpc.net/login?next=%2F')
-        time.sleep(3)
-
-        id_box = driver.find_element(By.XPATH, '//*[@id="login_form"]/div[2]/input')
-        id_box.click()
-        pyperclip.copy(BOJ_ID)
-        actions = ActionChains(driver)
-        actions.key_down(Keys.CONTROL).send_keys('v').key_up(Keys.CONTROL).perform()
-        time.sleep(1)
-
+        
+        # 명시적 대기 사용 (time.sleep 대신)
+        wait = WebDriverWait(driver, 10)
+        
+        # ID 입력 (pyperclip 대신 직접 입력)
+        print("로그인 정보 입력 중...")
+        id_box = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="login_form"]/div[2]/input')))
+        id_box.clear()
+        id_box.send_keys(BOJ_ID)
+        
+        # 비밀번호 입력
         password_box = driver.find_element(By.XPATH, '//*[@id="login_form"]/div[3]/input')
-        password_box.click()
-        pyperclip.copy(BOJ_PASSWORD)
-        actions = ActionChains(driver)
-        actions.key_down(Keys.CONTROL).send_keys('v').key_up(Keys.CONTROL).perform()
-        actions.key_down(Keys.RETURN)
-        time.sleep(1)
-
-        login_box = driver.find_element(By.XPATH, '//*[@id="submit_button"]')
-        login_box.click()
-        time.sleep(3)
-
+        password_box.clear()
+        password_box.send_keys(BOJ_PASSWORD)
+        
+        # 로그인 버튼 클릭
+        login_button = driver.find_element(By.XPATH, '//*[@id="submit_button"]')
+        login_button.click()
+        
+        print("로그인 완료, 그룹 관리 페이지로 이동 중...")
+        time.sleep(3)  # 로그인 처리 대기
+        
+        # 그룹 관리 페이지로 이동
         driver.get('https://www.acmicpc.net/group/admin/member/24084')
-
-        invite_box = driver.find_element(By.XPATH, '//*[@id="add-member-form"]/div/div/input')
-        invite_box.click()
+        
+        # 초대 입력란에 사용자 ID 입력
+        print(f"사용자 {boj_id} 초대 중...")
+        invite_box = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="add-member-form"]/div/div/input')))
+        invite_box.clear()
         invite_box.send_keys(boj_id)
-        invite_box.send_keys(Keys.RETURN)
-
-        driver.quit()
-    except:
-        if return_cnt == 3:
-            driver.quit()
-            exit()
+        invite_box.submit()  # Enter 키 대신 submit 사용
+        
+        print("초대 완료!")
+        return "성공"
+        
+    except Exception as e:
+        print(f"오류 발생: {e}")
+        
+        if return_cnt >= 3:
+            print("최대 재시도 횟수 초과")
+            return "실패"
         else:
             return_cnt += 1
-            return (invite(boj_id))
+            print(f"재시도 {return_cnt}/3")
+            time.sleep(2)  # 재시도 전 잠시 대기
+            return invite(boj_id)
+            
+    finally:
+        if driver is not None:
+            driver.quit()
+            print("Chrome 드라이버 종료")
