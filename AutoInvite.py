@@ -91,12 +91,13 @@ def invite(boj_id):
             print("찾음")
         password_box.clear()
         password_box.send_keys(BOJ_PASSWORD)
+        password_box.send_keys(Keys.RETURN)
         time.sleep(1)
         
-        login_button = driver.find_element(By.XPATH, '//*[@id="submit_button"]')
-        if login_button:
-            print("찾음")
-        login_button.click()
+        # login_button = driver.find_element(By.XPATH, '//*[@id="submit_button"]')
+        # if login_button:
+        #     print("찾음")
+        # login_button.click()
         
         print("로그인 처리 대기 중...")
         time.sleep(5)
