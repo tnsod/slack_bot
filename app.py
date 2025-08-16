@@ -14,7 +14,7 @@ BOT_TOKEN = os.getenv('SLACK_BOT_TOKEN')
 APP_TOKEN = os.getenv('SLACK_APP_TOKEN')
 SIGNING_SECRET = os.getenv('SLACK_SIGNING_SECRET')
 
-db = UserDB('users.db')
+db = UserDB()
 
 STATE_WAITING_FIRST = 'waiting_first_input'
 STATE_WAITING_SECOND = 'waiting_second_input'

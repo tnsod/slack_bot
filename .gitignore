@@ -8,3 +8,4 @@ users.db
 *.py[cod]
 *$py.class
 tempCodeRunnerFile.py
+config.py
