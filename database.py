@@ -37,6 +37,15 @@ class UserDB:
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         """
         )
+        # cur.execute(
+        #     """
+        #     CREATE TABLE IF NOT EXISTS user_friends (
+        #         user_id VARCHAR(255) PRIMARY KEY,
+        #         friend VARCHAR(255),
+        #         friend_state TINYINT(1)
+        #     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        # """
+        # )
         cur.close()
         conn.close()
 
@@ -117,6 +126,19 @@ class UserDB:
         conn.close()
         return row[0] if row else None
 
+    # def save_user_friend(self, user_id, friend):
+    #     conn = self._get_conn()
+    #     cur = conn.cursor()
+    #     cur.execute(
+    #         """
+    #         INSERT INTO user_friends (user_id, friend, friend_state)
+    #         VALUES (%s, %s, %s)
+    #     """,
+    #         (user_id, friend, 0),
+    #     )
+    #     cur.close()
+    #     conn.close()
+    
     def clear_user_data(self, user_id):
         conn = self._get_conn()
         cur = conn.cursor()

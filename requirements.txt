@@ -1,6 +1,4 @@
 dotenv
 slack_sdk
 slack_bolt
-selenium
-pyperclip
 requests

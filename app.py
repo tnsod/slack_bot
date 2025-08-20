@@ -3,7 +3,6 @@ from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from database import UserDB
 from Duplication import dup_id, dup_name, same_name
-from AutoInvite import invite
 import slack_sdk
 import IS_BOJ
 import os
@@ -20,6 +19,7 @@ STATE_WAITING_FIRST = 'waiting_first_input'
 STATE_WAITING_SECOND = 'waiting_second_input'
 STATE_COMPLETE = 'complete'
 STATE_WAITING_CHANGE = 'waiting_nickname_change'
+# STATE_INVITING_FRIEND = 'wating_invite'
 
 app = App(token=BOT_TOKEN, signing_secret=SIGNING_SECRET)
 
@@ -69,6 +69,25 @@ def change_nickname(ack, command):
         """)
     )
 
+# @app.command('/친구초대')
+# def invite_friend(ack, command):
+#     ack()
+#     user_id = command['user_id']
+
+#     db.save_user_state(user_id, STATE_INVITING_FRIEND)
+
+#     conversations_response = app.client.conversations_open(users=user_id)
+#     channel_id = conversations_response['channel']['id']
+
+#     app.client.chat_postMessage(
+#         channel = channel_id,
+#         text = textwrap.dedent("""
+#             *--------------------------------------------------------------------------------*\n
+#             초대하실 친구의 백준 아이디를 입력해주세요!
+#             *--------------------------------------------------------------------------------*\n
+#         """)
+#     )
+
 @app.message('')
 def user_input(message, say, client):
     channel_info = client.conversations_info(channel=message['channel'])
@@ -110,7 +129,7 @@ def user_input(message, say, client):
         
         say(textwrap.dedent(f"""
             *--------------------------------------------------------------------------------*\n
-            {user_text}님 반갑습니다!! 정말 멋진 이름이네요😊\n
+            {user_text}님 반갑습니다!! 정말 멋진 아이디네요😊\n
             다음으로는 본인만의 닉네임을 작성해 주세요. 예) zi존 아이그루스\n
             *--------------------------------------------------------------------------------*\n
         """))
@@ -135,11 +154,14 @@ def user_input(message, say, client):
             *유저 정보:*\n\
             • 백준 ID: {user_info['BOJ_id']}\n\
             • 닉네임: {user_info['user_name']}\n\n\
-            (정보가 잘못 되었거나 재입력을 원하시면 '/가입'을 입력하여 재가입 해주세요!)\n
+            *필독!!*\n
+            아그작은 백준 그룹을 통해서 진행 됩니다.\n
+            문제는 매주 월요일 공지 및 백준 그룹의 연습 탭에서 확인하실 수 있습니다.\n\n
+            *주의사항!!*\n
+            그룹에 초대되기 전에 문제를 해결하면 스코어보드에 집계가 안 됩니다!\n
+            이 경우에는 그룹에 초대되신 후 문제를 재제출하시면 됩니다.
             *--------------------------------------------------------------------------------*\n
         """))
-
-        invite(user_info['BOJ_id'])
     
     elif current_state == STATE_WAITING_CHANGE:
         stat = same_name(user_id, user_text)
@@ -169,7 +191,8 @@ def user_input(message, say, client):
             """))
 
             db.save_user_info(user_id, user_name=user_text)
-
+    # elif current_state == STATE_INVITING_FRIEND:
+        
     elif current_state == STATE_COMPLETE:
         say("이미 입력이 완료되었습니다. 새로운 입력을 원하시면 '/가입' 명령어를 입력해주세요.")
 
