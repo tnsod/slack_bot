@@ -1,4 +1,4 @@
-from config import DB_CONFIG
+from .config import DB_CONFIG
 from mysql.connector import pooling
 
 class UserDB:
