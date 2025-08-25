@@ -33,6 +33,7 @@ def main():
         diff = int(diff)
         add(cur, id, diff)
     
+    conn.commit()
     cur.close()
     conn.close()
 
