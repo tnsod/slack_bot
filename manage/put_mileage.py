@@ -8,7 +8,7 @@ def get_conn():
     return mysql.connector.connect(**DB_CONFIG)
 
 def weekly_data():
-    file = open('manage/weekly.txt')
+    file = open('weekly.txt')
     data = file.read().split('\n')
     users = [[(user, 1), tuple(user.split())][' ' in user] for user in data]
     return users
