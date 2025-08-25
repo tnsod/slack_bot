@@ -1,10 +1,9 @@
 from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
-from database import UserDB
-from Duplication import dup_id, dup_name, same_name
+from utils.database import UserDB
+import functions as f
 import slack_sdk
-import IS_BOJ
 import os
 import textwrap
 
@@ -105,7 +104,7 @@ def user_input(message, say, client):
         return
     
     if current_state == STATE_WAITING_FIRST:
-        if not IS_BOJ.check_id(user_text):
+        if not f.check_id(user_text):
             say(textwrap.dedent("""
                 *--------------------------------------------------------------------------------*\n
                 존재하지 않는 아이디 입니다. 다시 입력해주세요!
@@ -113,7 +112,7 @@ def user_input(message, say, client):
             """))
             return
         
-        elif dup_id(user_text):
+        elif f.dup_id(user_text):
             say(textwrap.dedent("""
                 *--------------------------------------------------------------------------------*\n
                 이미 가입이 완료된 아이디 입니다.\n\n
@@ -135,7 +134,7 @@ def user_input(message, say, client):
         """))
     
     elif current_state == STATE_WAITING_SECOND:
-        if dup_name(user_id, user_text):
+        if f.dup_name(user_id, user_text):
             say(textwrap.dedent("""
                 *--------------------------------------------------------------------------------*\n
                 존재하는 닉네임 입니다. 다시 입력해주세요.
@@ -164,7 +163,7 @@ def user_input(message, say, client):
         """))
     
     elif current_state == STATE_WAITING_CHANGE:
-        stat = same_name(user_id, user_text)
+        stat = f.same_name(user_id, user_text)
         if stat == 'same':
             say(textwrap.dedent("""
                 *--------------------------------------------------------------------------------*\n
@@ -214,14 +213,6 @@ def withdraw(ack, command):
     )
 
     db.clear_user_data(user_id)
-
-def send_rank():
-    client = slack_sdk.WebClient(token = BOT_TOKEN)
-    message = 'test'
-    client.chat_postMessage(
-        channel = '새-채널',
-        text = message
-    )
     
 if __name__=='__main__':
     handler = SocketModeHandler(app, APP_TOKEN)

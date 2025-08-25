@@ -1,7 +1,6 @@
 from config import DB_CONFIG
 from mysql.connector import pooling
 
-
 class UserDB:
     def __init__(self, **kwargs):
         self.pool = pooling.MySQLConnectionPool(
@@ -22,6 +21,7 @@ class UserDB:
                 slack_name VARCHAR(255),
                 BOJ_id VARCHAR(255),
                 user_name VARCHAR(255),
+                mileage TINYINT(1) NOT NULL DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
