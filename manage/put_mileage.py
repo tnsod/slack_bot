@@ -16,7 +16,7 @@ def weekly_data():
 def add(cur, BOJ_id, diff):
     cur.execute("""
                 UPDATE users
-                SET mileage = mileage + %i
+                SET mileage = mileage + %s
                 WHERE BOJ_ID=%s
             """,
                 (diff, BOJ_id),
