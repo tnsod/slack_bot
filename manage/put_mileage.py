@@ -11,7 +11,7 @@ def weekly_data():
     file = open('weekly.txt')
     data = file.read().split('\n')
     users = [[(user, 1), tuple(user.split())][' ' in user] for user in data]
-    print(users)
+    return users
 
 def add(cur, BOJ_id, diff):
     cur.execute("""
