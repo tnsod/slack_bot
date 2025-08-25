@@ -8,7 +8,7 @@ def get_conn():
     return mysql.connector.connect(**DB_CONFIG)
 
 def weekly_data():
-    file = open('weekly.txt')
+    file = open('manage/weekly.txt')
     data = file.read().split('\n')
     users = [[(user, 1), tuple(user.split())][' ' in user] for user in data]
     return users
@@ -29,6 +29,7 @@ def main():
 
     for u in user:
         id, diff = u
+        if id=='': continue
         diff = int(diff)
         add(cur, id, diff)
     
